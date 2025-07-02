@@ -1,0 +1,27 @@
+# Node.js
+node_modules/
+.env
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build files
+dist/
+build/
+*.class
+*.exe
+
+# IDE/editor settings
+.vscode/
+.idea/
+
+# React / Next.js / Angular
+.next/
+out/
+coverage/
+
+.env
