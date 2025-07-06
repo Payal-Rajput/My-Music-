@@ -1,8 +1,9 @@
 import userModel from "../models/user.model.js";
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 
-const JWT_SECRET="2c84db77340199bcde5cedf51319121812b7fb11387c28d2f40ad5c3c427ec63";
+dotenv.config();
 
 export async function registerUser(req, res) {
     const { username, password } = req.body;
@@ -25,9 +26,11 @@ export async function registerUser(req, res) {
 
     const token=jwt.sign(
         {id:user._id},
-        JWT_SECRET,
+        process.env.JWT_SECRET,
         {expiresIn:"1d"},
     )
+
+    res.cookie('token',token);
 
     res.status(201).json({
         message:"user registered successfully",
@@ -39,6 +42,8 @@ export async function registerUser(req, res) {
     })
     
 }
+
+
 
 export async function loginUser(req,res){
     const {username,password}=req.body;
@@ -63,9 +68,11 @@ export async function loginUser(req,res){
 
     const token=jwt.sign(
         {id: user._id},
-        JWT_SECRET,
+        process.env.JWT_SECRET,
         {expiresIn:"1d"}
     )
+
+    res.cookie('token',token);
 
     res.status(200).json({
         message:"user logged in  successfully",
