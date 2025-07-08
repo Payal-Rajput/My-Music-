@@ -5,6 +5,7 @@ import Login from '../pages/login/Login'
 import Upload from '../pages/upload/Upload'
 import Register from '../pages/register/Register'
 import Search from '../pages/search/Search'
+import Protected from '../components/Protected'
 
 
 
@@ -12,11 +13,11 @@ const AppRoutes = () => {
     return (
         <Router>
             <Routes>
-                <Route path="/" element={<Home />} />
+                <Route path="/" element={<Protected><Home /></Protected>} />
                 <Route path='/login' element={<Login />} />
                 <Route path='/register' element={<Register />} />
-                <Route path='/search' element={<Search />} />
-                <Route path="/upload" element={<Upload />} />
+                <Route path='/search' element={<Protected><Search /></Protected>} />
+                <Route path="/upload" element={<Protected><Upload /></Protected>} />
             </Routes>
         </Router>
     )

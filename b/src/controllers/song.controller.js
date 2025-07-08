@@ -2,35 +2,72 @@ import songModel from "../models/song.model.js";
 import { uploadFile } from "../services/storage.service.js"
 
 
-export async function upload (req,res){
+// export async function upload (req,res){
     
+//     // console.log(req.file, req.body);
+
+//     const result= await uploadFile(req.file.buffer);
+    
+//     const {artist,title} = req.body;
+    
+//     const audiourl = result.url;
+
+
+//     const song = await songModel.create({
+//         artist,
+//         title,
+//         audio:audiourl
+//     })
+
+//     res.status(201).json({
+//         message:"song uploaded successfully",
+//         song:{
+//             id:song._id,
+//             title:song.title,
+//             artist:song.artist,
+//             audio:song.audio
+
+//         }
+//     })
+// }
+
+
+
+
+
+
+export async function upload (req, res) {
     // console.log(req.file, req.body);
 
-    const result= await uploadFile(req.file.buffer);
-    
-    const {artist,title} = req.body;
-    
+    const result = await uploadFile(req.file.buffer);
+
+    const { artist, title, poster } = req.body;
+
     const audiourl = result.url;
 
-
-    const song = await songModel.create({
+    // Only include poster if user provided a non-empty value, otherwise let model default apply
+    const songData = {
         artist,
         title,
-        audio:audiourl
-    })
+        audio: audiourl
+    };
+    if (poster && poster.trim() !== "") {
+        songData.poster = poster;
+    }
+
+    const song = await songModel.create(songData);
 
     res.status(201).json({
-        message:"song uploaded successfully",
-        song:{
-            id:song._id,
-            title:song.title,
-            artist:song.artist,
-            audio:song.audio
-
+        message: "song uploaded successfully",
+        song: {
+            id: song._id,
+            title: song.title,
+            artist: song.artist,
+            audio: song.audio,
+            poster: song.poster
         }
-    })
+    });
 }
-
 
 export async function getSongs(req,res){
 

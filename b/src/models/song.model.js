@@ -12,7 +12,7 @@ const songSchema=new mongoose.Schema({
     },
     poster:{
         type:String,
-        deafult:"https://i.pinimg.com/736x/e0/94/c9/e094c9ae9929e2df6d2f026fdb9554a6.jpg"
+        default:"https://i.pinimg.com/736x/e0/94/c9/e094c9ae9929e2df6d2f026fdb9554a6.jpg"
     },
     audio:{
         type:String,

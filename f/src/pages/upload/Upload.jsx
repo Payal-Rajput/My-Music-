@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+
+import React, { useState, useRef } from 'react'
 import { useDispatch } from 'react-redux'
 
 import { addSong } from '../../redux/features/songSlice'
@@ -6,42 +7,46 @@ import { useNavigate } from 'react-router-dom'
 import Navigation from '../../components/Navigation'
 
 import './Upload.css'
+import axios from 'axios'
 
 const Upload = () => {
     const [title, setTitle] = useState('')
     const [artist, setArtist] = useState('')
-    const [_audioFile, setAudioFile] = useState(null) // Prefix with _ to ignore unused var warning
-    const [imageFile, setImageFile] = useState(null)
+    const [posterUrl, setPosterUrl] = useState('')
+    const audioFileRef = useRef(null)
+
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        // In a real app, you would upload the files to a server here
-        // For now, we'll just add the song to the Redux store
-        const newSong = {
-            id: Date.now(), // temporary ID generation
-            title,
-            artist,
-            // Using a placeholder image if no image is selected
-            image: imageFile ? URL.createObjectURL(imageFile) : "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop"
-        }
-        dispatch(addSong(newSong))
-        navigate('/')
-    }
 
-    const handleAudioUpload = (e) => {
-        const file = e.target.files[0]
-        if (file && file.type.startsWith('audio/')) {
-            setAudioFile(file)
+        // Get audio file
+        const audioFile = audioFileRef.current?.files?.[0]
+        if (!audioFile) {
+            alert("Please select an audio file.")
+            return
         }
-    }
 
-    const handleImageUpload = (e) => {
-        const file = e.target.files[0]
-        if (file && file.type.startsWith('image/')) {
-            setImageFile(file)
-        }
+        // Always send poster field, even if empty, so backend can use default if not provided
+        const formData = new FormData()
+        formData.append('title', title)
+        formData.append('artist', artist)
+        // Always append poster (empty string if not provided)
+        formData.append('poster', posterUrl.trim())
+        formData.append('song', audioFile)
+
+        axios.post('http://localhost:3000/songs/upload', formData, {
+            withCredentials: true
+        })
+        .then(response => {
+            
+            navigate('/')
+        })
+        .catch(err => {
+            alert("Upload failed. Please try again.")
+            console.error(err)
+        })
     }
 
     return (
@@ -69,30 +74,30 @@ const Upload = () => {
                     onChange={(e) => setArtist(e.target.value)}
                     required
                 />
+
+                <input
+                    type="url"
+                    placeholder="Poster Image URL (optional)"
+                    value={posterUrl}
+                    onChange={e => setPosterUrl(e.target.value)}
+                    style={{ marginBottom: '1em' }}
+                />
+
                 <div className="upload-buttons">
                     <label className="upload-button">
                         Upload Audio File
                         <input
+                            id='_audioFile'
                             type="file"
                             accept="audio/*"
-                            onChange={handleAudioUpload}
                             required
-                            style={{ display: 'none' }}
-                        />
-                    </label>
-                    <label className="upload-button">
-                        Upload image File
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleImageUpload}
+                            ref={audioFileRef}
                             style={{ display: 'none' }}
                         />
                     </label>
                 </div>
                 <button type="submit" className="submit-button">Upload Music</button>
             </form>
-            
             <Navigation />
         </section>
     )
