@@ -83,3 +83,41 @@ export async function loginUser(req,res){
         token
     })
 }
+
+
+
+// we are calling me api to ensure that the user is logged in and then he can access the protected routes and protected routes here means the routes that are protected and only the logged in user can access them
+export async function me(req,res){
+    const token=req.cookies.token;
+    if(!token){
+        return res.status(401).json({
+            message:"unauthorized"
+        })
+    }
+
+    try{
+        const decoded=jwt.verify(token,process.env.JWT_SECRET);
+        return res.status(200).json({
+            message:"user logged in successfully",
+            user:{
+                id:decoded.id
+            }
+        })
+    }
+    catch(err){
+        return res.status(401).json({
+            message:"unauthorized"
+        })
+    }
+
+}
+
+
+
+
+
+
+
+// we are using jwt to verify the token
+// we are using cookies to store the token
+
